@@ -4,23 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's On MUBI 2</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="image-container"></div>
+    <h1>What's On MUBI&sup2;</h1>
+    <input type="text" id="search" placeholder="Search for a film..." oninput="filter()" class="search-bar">
+    <input type="text" id="searchDirector" placeholder="Search for a director..." oninput="filter()" class="search-bar">
+    <input type="button" id="reset" value="Reset" onclick="resetFields()" class="search-bar">
+    <div id="image-container" class="image-container"></div>
     <script>
-        document.addEventListener("DOMContentLoaded", async function() {
-            const container = document.getElementById('image-container');
+        const container = document.getElementById('image-container');
 
-            function addImage(src) {
-                const img = document.createElement('img');
-                img.src = src;
-                container.appendChild(img);
+        function addImage(src, alt) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = alt;
+            img.className = 'cover';
+            container.appendChild(img);
+        }
+
+        function refreshImages() {
+            container.innerHTML = ''; // Clear the container
+            displayedFilms.forEach(film => addImage(film.stills.medium, film.title));
+        }
+
+        function filter() {
+            const searchDirector = document.getElementById('searchDirector').value.toLowerCase();
+            const searchFilm = document.getElementById('search').value.toLowerCase();
+            displayedFilms = Array.from(films);
+            if (searchDirector !== '') {
+                displayedFilms = displayedFilms.filter(film => film.directors.some(dir => dir.name.toLowerCase().includes(searchDirector)));
             }
+            if (searchFilm !== '') {
+                displayedFilms = displayedFilms.filter(film => film.title.toLowerCase().includes(searchFilm));
+            }
+            refreshImages();
+        }
 
-            window.res = await fetch('./mubi.json');
+        function resetFields() {
+            document.getElementById('search').value = '';
+            document.getElementById('searchDirector').value = '';
+            displayedFilms = Array.from(films);
+            refreshImages();
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            const res = await fetch('./mubi.json');
             window.films = await res.json();
-            // container.innerText = Object.keys(films).length + ' films found.';
-            Object.values(films).forEach(film => addImage(film.stills.medium));
+            films = Object.values(films);
+            console.log(films.length + ' films found.');
+            window.displayedFilms = Array.from(films);
+            refreshImages();
         });
     </script>
 </body>
