@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>What's On MUBI 2</title>
+    <title>What's on MUBI 2</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>What's On MUBI&sup2;</h1>
+    <h1>What's on MUBI&sup2;</h1>
     <input type="text" id="search" placeholder="Search for a film..." oninput="filter()" class="search-bar">
     <input type="text" id="searchDirector" placeholder="Search for a director..." oninput="filter()" class="search-bar">
     <input type="button" id="reset" value="Reset" onclick="resetFields()" class="search-bar">
@@ -29,14 +29,16 @@
         }
 
         function filter() {
-            const searchDirector = document.getElementById('searchDirector').value.toLowerCase();
-            const searchFilm = document.getElementById('search').value.toLowerCase();
+            const searchDirector = document.getElementById('searchDirector').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+            const searchFilm = document.getElementById('search').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
             displayedFilms = Array.from(films);
             if (searchDirector !== '') {
-                displayedFilms = displayedFilms.filter(film => film.directors.some(dir => dir.name.toLowerCase().includes(searchDirector)));
+                displayedFilms = displayedFilms.filter(film => film.directors.some(dir => 
+                    dir.name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchDirector)));
             }
             if (searchFilm !== '') {
-                displayedFilms = displayedFilms.filter(film => film.title.toLowerCase().includes(searchFilm));
+                displayedFilms = displayedFilms.filter(film => 
+                    film.title.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchFilm));
             }
             refreshImages();
         }
