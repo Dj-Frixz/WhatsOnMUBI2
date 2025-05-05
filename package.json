@@ -1,0 +1,22 @@
+{
+  "name": "whatsonmubi2",
+  "version": "0.1.0",
+  "description": "World catalogue of available movies on MUBI, updated daily! Inspired from the original whatsonmubi.",
+  "main": "extract.js",
+  "scripts": {
+    "test": "node extract.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "WhatsOnMUBI2"
+  },
+  "keywords": [
+    "MUBI",
+    "whatsonmubi",
+    "films",
+    "movies",
+    "streaming"
+  ],
+  "author": "Dj-Frixz",
+  "license": "ISC"
+}
