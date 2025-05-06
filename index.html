@@ -15,9 +15,15 @@
         <select title="Loading countries..." name="country" id="countrySelect" onchange="filter()" class="search-bar" disabled>
             <option value=>All countries</option>
         </select>
+        <select title="Sort by" name="sort" id="sortSelect" onchange="sortBy()" class="search-bar">
+            <option value="popularity">Popularity</option>
+            <option value="average_rating_out_of_ten">User rating</option>
+            <option value="critic_review_rating">Critic rating</option>
+            <option value="year">Year</option>
+        </select>
     </fieldset>
     <div id="image-container" class="image-container"></div>
-    <script src="scripts.js?v=0.5"></script>
+    <script src="scripts.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", loadContent());
     </script>

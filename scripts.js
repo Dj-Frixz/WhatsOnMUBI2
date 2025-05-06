@@ -5,7 +5,7 @@ async function loadContent() {
     console.log(films.length + ' films found.');
     window.displayedFilms = Array.from(films);
     window.imageContainer = document.getElementById('image-container');
-    refreshImages();
+    sortBy();
     res = await fetch('./countryCodes.json');
     window.countries = await res.json();
     loadCountries();
@@ -23,8 +23,7 @@ function loadCountries() {
     });
 }
 
-function addImage(src, alt) {
-    const imgBlock = document.createElement('div');
+function addImage(imgBlock, src, alt) {
     imgBlock.className = 'img-block';
     const img = document.createElement('img');
     img.src = src;
@@ -53,7 +52,8 @@ function addOverlay(imgBlock, title, directors, availability) {
 function refreshImages() {
     imageContainer.innerHTML = ''; // Clear the container
     displayedFilms.forEach(film => {
-        const imgBlock = addImage(film.stills.medium, film.title);
+        const imgBlock = document.createElement('div');
+        addImage(imgBlock, film.stills.medium, film.title);
         addOverlay(imgBlock, film.title, film.directors.map(dir => dir.name).join(', '), Object.keys(film.availability).join(', '));
     });
 }
@@ -82,4 +82,10 @@ function resetFields() {
     document.getElementById('searchDirector').value = '';
     displayedFilms = Array.from(films);
     refreshImages();
+}
+
+function sortBy() {
+    const sortBy = document.getElementById('sortSelect').value;
+    films = films.sort((a, b) => b[sortBy] - a[sortBy]);
+    filter();
 }

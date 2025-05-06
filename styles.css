@@ -33,7 +33,7 @@ h1 {
     transition: filter 0.3s ease;
 }
 .image-container img:hover {
-    filter: brightness(40%);
+    filter: brightness(30%);
 }
 .img-overlay {
     position: absolute;
@@ -52,18 +52,6 @@ h1 {
 }
 .img-block:hover .img-overlay {
     opacity: 1;
-}
-.overlay-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 1.5rem;
-    opacity: 0;
-    transition: opacity 0.1s ease;
-    text-shadow: 0 0 5px black;
-    pointer-events: none;
 }
 .input-container {
     margin-inline: 5%;

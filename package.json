@@ -1,6 +1,6 @@
 {
   "name": "whatsonmubi2",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "World catalogue of available movies on MUBI, updated daily! Inspired from the original whatsonmubi.",
   "main": "extract.js",
   "scripts": {
