@@ -24,16 +24,38 @@ function loadCountries() {
 }
 
 function addImage(src, alt) {
+    const imgBlock = document.createElement('div');
+    imgBlock.className = 'img-block';
     const img = document.createElement('img');
     img.src = src;
     img.alt = alt;
     img.className = 'cover';
-    imageContainer.appendChild(img);
+    imageContainer.appendChild(imgBlock);
+    imgBlock.appendChild(img);
+    return imgBlock;
+}
+
+function addOverlay(imgBlock, title, directors, availability) {
+    const overlay = document.createElement('div');
+    overlay.className = 'img-overlay';
+    const titleElement = document.createElement('h2');
+    titleElement.textContent = title;
+    const directorsElement = document.createElement('p');
+    directorsElement.textContent = 'By ' + directors;
+    const availabilityElement = document.createElement('p');
+    availabilityElement.textContent = 'Available in: ' + (availability.length < 150 ? availability : availability.slice(0, 150) + ',...');
+    overlay.appendChild(titleElement);
+    overlay.appendChild(directorsElement);
+    overlay.appendChild(availabilityElement);
+    imgBlock.appendChild(overlay);
 }
 
 function refreshImages() {
     imageContainer.innerHTML = ''; // Clear the container
-    displayedFilms.forEach(film => addImage(film.stills.medium, film.title));
+    displayedFilms.forEach(film => {
+        const imgBlock = addImage(film.stills.medium, film.title);
+        addOverlay(imgBlock, film.title, film.directors.map(dir => dir.name).join(', '), Object.keys(film.availability).join(', '));
+    });
 }
 
 function filter() {

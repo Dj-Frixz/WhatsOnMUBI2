@@ -8,14 +8,16 @@
 </head>
 <body>
     <h1>What's on MUBI&sup2;</h1>
-    <input type="text" id="search" placeholder="Search for a film..." oninput="filter()" class="search-bar">
-    <input type="text" id="searchDirector" placeholder="Search for a director..." oninput="filter()" class="search-bar">
-    <input type="button" id="reset" value="Reset" onclick="resetFields()" class="search-bar">
-    <select title="Loading countries..." name="country" id="countrySelect" onchange="filter()" class="search-bar" disabled>
-        <option value=>All countries</option>
-    </select>
+    <fieldset class="input-container">
+        <input type="text" id="search" placeholder="Search for a film..." oninput="filter()" class="search-bar">
+        <input type="text" id="searchDirector" placeholder="Search for a director..." oninput="filter()" class="search-bar">
+        <input type="button" id="reset" value="Reset" onclick="resetFields()" class="search-bar">
+        <select title="Loading countries..." name="country" id="countrySelect" onchange="filter()" class="search-bar" disabled>
+            <option value=>All countries</option>
+        </select>
+    </fieldset>
     <div id="image-container" class="image-container"></div>
-    <script src="scripts.js"></script>
+    <script src="scripts.js?v=0.5"></script>
     <script>
         document.addEventListener("DOMContentLoaded", loadContent());
     </script>
