@@ -28,9 +28,11 @@ h1 {
     color: white;
 }
 .image-container img {
+    max-width: 98%;
     border-radius: 20px;
     border: 0px solid var(--blue);
     transition: filter 0.3s ease;
+    overflow: hidden;
 }
 .image-container img:hover {
     filter: brightness(30%);
@@ -73,4 +75,60 @@ h1 {
 }
 input::placeholder {
     color: #a3bffa;
+}
+
+/* Splash screen CSS */
+
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1d21;
+    color: #82aaff;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: opacity 1s ease;
+    font-family: 'Courier New', Courier, monospace;
+}
+#splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+#splash-screen h1 {
+    position: absolute;
+    font-size: 2.5em;
+    text-align: center;
+    z-index: 2;
+}
+
+.hand {
+    position: absolute;
+    bottom: 0;
+    width: 50%;
+    height: auto;
+    animation: oscillate 2s ease-in-out infinite;
+}
+.left-hand {
+    left: 0;
+}
+.right-hand {
+    right: 0;
+    scale: -1 1;
+}
+
+@keyframes oscillate {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(15%);
+    }
+    100% {
+      transform: translateX(0);
+    }
 }

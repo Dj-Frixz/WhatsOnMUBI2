@@ -1,17 +1,39 @@
 async function loadContent() {
+    
+    // Load film data
     let res = await fetch('./mubi.json');
     window.films = await res.json();
     films = Object.values(films);
     console.log(films.length + ' films found.');
-    window.displayedFilms = Array.from(films);
+    window.filteredFilms = Array.from(films);
+
+    // Load the images
     window.imageContainer = document.getElementById('image-container');
-    sortBy();
+    await sortBy();
+
+    // Fade out the splash screen after 2 seconds (after loading the content)
+    setTimeout(hideSplash, 2000);
+
+    // Load countries
     res = await fetch('./countryCodes.json');
     window.countries = await res.json();
     loadCountries();
+
+    // Add event listener for loading more images at the end of the page
+    const end = document.getElementById('end-of-file');
+    const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+        loadNextImages();
+    }
+    }, {
+    rootMargin: '500px', // triggers 500px *before* entering the viewport
+    threshold: 0.01
+    });
+
+    observer.observe(end);
 }
 
-function loadCountries() {
+async function loadCountries() {
     const countrySelect = document.getElementById('countrySelect');
     countrySelect.disabled = false;
     countrySelect.title = 'Select a country';
@@ -24,11 +46,10 @@ function loadCountries() {
 }
 
 function addImage(imgBlock, src, alt) {
-    imgBlock.className = 'img-block';
     const img = document.createElement('img');
     img.src = src;
     img.alt = alt;
-    img.className = 'cover';
+    // img.loading = 'lazy';
     imageContainer.appendChild(imgBlock);
     imgBlock.appendChild(img);
     return imgBlock;
@@ -49,43 +70,59 @@ function addOverlay(imgBlock, title, directors, availability) {
     imgBlock.appendChild(overlay);
 }
 
-function refreshImages() {
+async function refreshImages() {
     imageContainer.innerHTML = ''; // Clear the container
-    displayedFilms.forEach(film => {
+    window.i = 0;
+    loadNextImages();
+}
+
+async function loadNextImages() {
+    const nextFilms = filteredFilms.slice(i, i + 24);
+    nextFilms.forEach(film => {
         const imgBlock = document.createElement('div');
+        imgBlock.className = 'img-block';
         addImage(imgBlock, film.stills.medium, film.title);
         addOverlay(imgBlock, film.title, film.directors.map(dir => dir.name).join(', '), Object.keys(film.availability).join(', '));
+        i++;
     });
 }
 
-function filter() {
+async function filter() {
     const countryCode = document.getElementById('countrySelect').value;
     const searchDirector = document.getElementById('searchDirector').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
     const searchFilm = document.getElementById('search').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-    displayedFilms = Array.from(films);
+    filteredFilms = Array.from(films);
     if (countryCode !== '') {
-        displayedFilms = displayedFilms.filter(film => film.availability[countryCode] ? true : false);
+        filteredFilms = filteredFilms.filter(film => film.availability[countryCode] ? true : false);
     }
     if (searchDirector !== '') {
-        displayedFilms = displayedFilms.filter(film => film.directors.some(dir => 
+        filteredFilms = filteredFilms.filter(film => film.directors.some(dir => 
             dir.name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchDirector)));
     }
     if (searchFilm !== '') {
-        displayedFilms = displayedFilms.filter(film => 
+        filteredFilms = filteredFilms.filter(film => 
             film.title.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchFilm));
     }
     refreshImages();
 }
 
-function resetFields() {
+async function resetFields() {
     document.getElementById('search').value = '';
     document.getElementById('searchDirector').value = '';
-    displayedFilms = Array.from(films);
+    filteredFilms = Array.from(films);
     refreshImages();
 }
 
-function sortBy() {
+async function sortBy() {
     const sortBy = document.getElementById('sortSelect').value;
     films = films.sort((a, b) => b[sortBy] - a[sortBy]);
     filter();
+}
+
+function hideSplash() {
+    document.getElementById('splash-screen').classList.add('fade-out');
+    setTimeout(() => {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.body.removeChild(document.getElementById('splash-screen'));
+    }, 1000);
 }

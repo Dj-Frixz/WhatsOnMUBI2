@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="splash-screen">
+        <img class="hand left-hand" src="hand.png" alt="Left Hand" />
+        <img class="hand right-hand" src="hand.png" alt="Right Hand" />
+        <h1>What's on MUBI<sup>2</sup></h1>
+    </div>      
     <h1>What's on MUBI&sup2;</h1>
     <fieldset class="input-container">
         <input type="text" id="search" placeholder="Search for a film..." oninput="filter()" class="search-bar">
@@ -23,6 +28,7 @@
         </select>
     </fieldset>
     <div id="image-container" class="image-container"></div>
+    <div id="end-of-file"></div>
     <script src="scripts.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", loadContent());
