@@ -28,7 +28,7 @@
         </select>
     </fieldset>
     <div class="range-box">
-        <p>Image resizing</p>
+        <p>Size of images</p>
         <input type="range" id="slider" min="0" max="448" step="1" value="448" class="slider"
             oninput="document.documentElement.style.setProperty('--resizable-width', `${this.value}px`);"
             onchange="const param = new URLSearchParams(window.location.search);
