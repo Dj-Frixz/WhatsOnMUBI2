@@ -56,9 +56,11 @@ h1 {
     opacity: 1;
 }
 .input-container {
-    margin-inline: 5%;
+    width: fit-content;
+    margin-inline: auto;
     padding-block: 0.7em calc(1em - var(--input-margin-bottom));
     padding-inline: 1.5em;
+    text-align: center;
     background-color: #252a34;
     border-radius: 0.5em;
     border-style: dashed;
@@ -67,6 +69,7 @@ h1 {
     border-radius: 15px;
 }
 .input-container > * {
+    max-width: 170px;
     margin-bottom: var(--input-margin-bottom);
     margin-inline: 0.75em;
     color: #d1d9e6;
