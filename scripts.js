@@ -1,3 +1,5 @@
+////// INITIAL CONTENT LOADING
+
 async function loadContent() {
     
     // Load film data
@@ -6,6 +8,11 @@ async function loadContent() {
     films = Object.values(films);
     console.log(films.length + ' films found.');
     window.filteredFilms = Array.from(films);
+
+    // Set the size of the images
+    const imgSize = new URLSearchParams(window.location.search).get('imgsize') || 448;
+    document.getElementById('slider').value = imgSize;
+    document.documentElement.style.setProperty('--resizable-width', `${imgSize}px`);
 
     // Load the images
     window.imageContainer = document.getElementById('image-container');
@@ -26,10 +33,10 @@ async function loadContent() {
         loadNextImages();
     }
     }, {
-    rootMargin: '1000px', // triggers 500px *before* entering the viewport
+    rootMargin: '100%', // triggers *before* entering the viewport
     threshold: 0.01
     });
-
+    
     observer.observe(end);
 }
 
@@ -42,6 +49,38 @@ async function loadCountries() {
         option.value = country.code;
         option.textContent = country.name;
         countrySelect.appendChild(option);
+    });
+}
+
+function hideSplash() {
+    document.getElementById('splash-screen').classList.add('fade-out');
+    setTimeout(() => {
+        document.getElementById('splash-screen').remove();
+    }, 1000);
+}
+
+////// UI/UX FUNCTIONS
+
+//// Image loading
+
+async function refreshImages() {
+    imageContainer.innerHTML = ''; // Clear the container
+    window.i = 0;
+    loadNextImages();
+}
+
+async function loadNextImages() {
+    const nextFilms = filteredFilms.slice(i, i + 24);
+    nextFilms.forEach(film => {
+        const imgBlock = document.createElement('div');
+        imgBlock.className = 'img-block';
+        addImage(imgBlock, film.stills.medium, film.title);
+        addOverlay(
+            imgBlock,
+            film.title, film.directors.map(dir => dir.name).join(', '),
+            Object.keys(film.availability).join(', ') // `https://flagcdn.com/24x18/${countrycode}.png`
+        );
+        i++;
     });
 }
 
@@ -63,29 +102,15 @@ function addOverlay(imgBlock, title, directors, availability) {
     const directorsElement = document.createElement('p');
     directorsElement.textContent = 'By ' + directors;
     const availabilityElement = document.createElement('p');
-    availabilityElement.textContent = 'Available in: ' + (availability.length < 150 ? availability : availability.slice(0, 150) + ',...');
+    availabilityElement.className = 'availability';
+    availabilityElement.textContent = 'Available in: ' + availability;
     overlay.appendChild(titleElement);
     overlay.appendChild(directorsElement);
     overlay.appendChild(availabilityElement);
     imgBlock.appendChild(overlay);
 }
 
-async function refreshImages() {
-    imageContainer.innerHTML = ''; // Clear the container
-    window.i = 0;
-    loadNextImages();
-}
-
-async function loadNextImages() {
-    const nextFilms = filteredFilms.slice(i, i + 24);
-    nextFilms.forEach(film => {
-        const imgBlock = document.createElement('div');
-        imgBlock.className = 'img-block';
-        addImage(imgBlock, film.stills.medium, film.title);
-        addOverlay(imgBlock, film.title, film.directors.map(dir => dir.name).join(', '), Object.keys(film.availability).join(', '));
-        i++;
-    });
-}
+//// Filters and sortings
 
 async function filter() {
     const countryCode = document.getElementById('countrySelect').value;
@@ -117,11 +142,4 @@ async function sortBy() {
     const sortBy = document.getElementById('sortSelect').value;
     films = films.sort((a, b) => b[sortBy] - a[sortBy]);
     filter();
-}
-
-function hideSplash() {
-    document.getElementById('splash-screen').classList.add('fade-out');
-    setTimeout(() => {
-        document.getElementById('splash-screen').remove();
-    }, 1000);
 }

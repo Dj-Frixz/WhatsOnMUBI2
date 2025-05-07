@@ -27,6 +27,15 @@
             <option value="year">Year</option>
         </select>
     </fieldset>
+    <div class="range-box">
+        <p>Image resizing</p>
+        <input type="range" id="slider" min="0" max="448" step="1" value="448" class="slider"
+            oninput="document.documentElement.style.setProperty('--resizable-width', `${this.value}px`);"
+            onchange="const param = new URLSearchParams(window.location.search);
+                      param.set('imgsize', this.value);
+                      window.history.replaceState({}, '', '?'+param);"
+        >
+    </div>
     <div id="image-container" class="image-container"></div>
     <div id="end-of-file"></div>
     <script src="scripts.js"></script>

@@ -1,31 +1,39 @@
 :root {
     --input-margin-bottom: 0.625em;
     --blue: #4479ed;
+    --mubi-blue: #04148b;
+    --base-font-color: azure;/*magenta;*/
+    --resizable-width: 448px;
+    --base-font-size: calc(16 * var(--resizable-width) / 448);/* pixels to rem conversion */
 }
 body {
     background-color: #1a1d21;
-    color: var(--blue);
-    font-family: 'Courier New', Courier, monospace;
+    color: var(--base-font-color);
+    font-family: 'Arial', sans-serif;
     font-size: 1.2em;
 }
 h1 {
-    text-align: center;
+    width: fit-content;
+    padding: 0.5em 1em;
+    margin-inline: auto;
     margin-block: 1em;
-    color: #82aaff;
+    text-align: center;
+    border-radius: 150px;
+    background-color: var(--mubi-blue);
 }
 .image-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     margin-top: 2em;
 }
 .img-block {
     position: relative;
-    margin-block: 5px;
-    margin-inline: auto;
+    max-width: var(--resizable-width);
+    transition: max-width 0.1s ease;
+    margin: 5px;
     text-align: center;
-    color: white;
 }
 .image-container img {
     max-width: 98%;
@@ -39,18 +47,30 @@ h1 {
 }
 .img-overlay {
     position: absolute;
-    top: 0;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    padding-block: 5%;
+    width: 80%;
     padding-inline: 10%;
-    color: white;
-    font-size: 1rem;
+    /* center the overlay text vertically */
+    top: 50%;
+    transform: translateY(-50%);
+    /* box-sizing: border-box;*/
+    font-size: var(--base-font-size);
     opacity: 0;
     transition: opacity 0.1s ease;
     text-shadow: 0 0 5px black;
     pointer-events: none;
+}
+.img-overlay h2 {
+    margin: 0 0.5em;
+}
+.availability {
+    display: -webkit-box;
+    margin: 0.5em 0;
+    -webkit-line-clamp: 3;        /* Number of lines before cutting off */
+    line-clamp: 3;                /* Standard property for compatibility */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: calc(0.8 * var(--base-font-size));
 }
 .img-block:hover .img-overlay {
     opacity: 1;
@@ -62,22 +82,28 @@ h1 {
     padding-inline: 1.5em;
     text-align: center;
     background-color: #252a34;
-    border-radius: 0.5em;
     border-style: dashed;
     border-width: 2px;
-    border-color: var(--blue);
+    border-color: var(--base-font-color);
     border-radius: 15px;
 }
 .input-container > * {
     max-width: 170px;
     margin-bottom: var(--input-margin-bottom);
     margin-inline: 0.75em;
-    color: #d1d9e6;
-    caret-color: #d1d9e6;
-    background-color: #2e3440;
+    border-radius: 5px;
+    background-color: azure;/*#3c3f46;#2e3440;*/
 }
-input::placeholder {
-    color: #a3bffa;
+.range-box{
+    margin-top: 1em;
+    padding-inline: 20%;
+}
+.range-box p {
+    margin: 0;
+    font-size: 0.8rem;
+}
+.slider {
+    width: 100%;
 }
 
 /* Splash screen CSS */
@@ -96,7 +122,6 @@ input::placeholder {
     align-items: center;
     overflow: hidden;
     transition: opacity 1s ease;
-    font-family: 'Courier New', Courier, monospace;
 }
 #splash-screen.fade-out {
     opacity: 0;
@@ -106,7 +131,7 @@ input::placeholder {
     position: absolute;
     font-size: 2.5em;
     text-align: center;
-    z-index: 2;
+    z-index: -1;
 }
 
 .hand {
@@ -128,8 +153,11 @@ input::placeholder {
     0% {
       transform: translateX(0);
     }
-    50% {
+    33% {
       transform: translateX(15%);
+    }
+    66% {
+      transform: translateX(-15%);
     }
     100% {
       transform: translateX(0);
