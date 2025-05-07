@@ -14,17 +14,17 @@ async function loadContent() {
     document.getElementById('slider').value = imgSize;
     document.documentElement.style.setProperty('--resizable-width', `${imgSize}px`);
 
+    // Load countries
+    res = await fetch('./countryCodes.json');
+    window.countries = await res.json();
+    loadCountries();
+
     // Load the images
     window.imageContainer = document.getElementById('image-container');
     await sortBy();
 
     // Fade out the splash screen after loading the content
-    hideSplash();
-
-    // Load countries
-    res = await fetch('./countryCodes.json');
-    window.countries = await res.json();
-    loadCountries();
+    setTimeout(hideSplash(), 1000);
 
     // Add event listener for loading more images at the end of the page
     const end = document.getElementById('end-of-file');
@@ -54,6 +54,7 @@ async function loadCountries() {
 
 function hideSplash() {
     document.getElementById('splash-screen').classList.add('fade-out');
+    document.getElementById('splash-title').classList.add('fade-out');
     setTimeout(() => {
         document.getElementById('splash-screen').remove();
     }, 1000);
@@ -78,8 +79,12 @@ async function loadNextImages() {
         addOverlay(
             imgBlock,
             film.title, film.directors.map(dir => dir.name).join(', '),
-            Object.keys(film.availability).join(', ') // `https://flagcdn.com/24x18/${countrycode}.png`
-        );
+            Object.keys(film.availability)
+            // Emojis
+            /*Object.keys(film.availability).map(code => 
+                code.replace(/./g, char => 
+                    String.fromCodePoint(char.charCodeAt(0) + 127397))).join(' ') // `https://flagcdn.com/24x18/${countrycode}.png`
+        */);
         i++;
     });
 }
@@ -88,7 +93,7 @@ function addImage(imgBlock, src, alt) {
     const img = document.createElement('img');
     img.src = src;
     img.alt = alt;
-    // img.loading = 'lazy';
+    img.className = 'cover';
     imageContainer.appendChild(imgBlock);
     imgBlock.appendChild(img);
     return imgBlock;
@@ -100,10 +105,13 @@ function addOverlay(imgBlock, title, directors, availability) {
     const titleElement = document.createElement('h2');
     titleElement.textContent = title;
     const directorsElement = document.createElement('p');
-    directorsElement.textContent = 'By ' + directors;
+    directorsElement.textContent = directors;
     const availabilityElement = document.createElement('p');
     availabilityElement.className = 'availability';
-    availabilityElement.textContent = 'Available in: ' + availability;
+    availabilityElement.innerHTML = availability.map(code =>
+        `<img src="https://flagcdn.com/24x18/${code.toLowerCase()}.png" alt="${code}"
+        title="${countries.find(country => country.code == code)?.name}" class="flag" />`
+    ).join('');
     overlay.appendChild(titleElement);
     overlay.appendChild(directorsElement);
     overlay.appendChild(availabilityElement);

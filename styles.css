@@ -35,14 +35,14 @@ h1 {
     margin: 5px;
     text-align: center;
 }
-.image-container img {
+.cover {
     max-width: 98%;
     border-radius: 20px;
     border: 0px solid var(--blue);
     transition: filter 0.3s ease;
     overflow: hidden;
 }
-.image-container img:hover {
+.img-block:hover .cover {
     filter: brightness(30%);
 }
 .img-overlay {
@@ -57,14 +57,13 @@ h1 {
     opacity: 0;
     transition: opacity 0.1s ease;
     text-shadow: 0 0 5px black;
-    pointer-events: none;
 }
 .img-overlay h2 {
-    margin: 0 0.5em;
+    margin-block: 1rem 0.3rem;
 }
 .availability {
     display: -webkit-box;
-    margin: 0.5em 0;
+    margin-block: 2rem 1rem;
     -webkit-line-clamp: 3;        /* Number of lines before cutting off */
     line-clamp: 3;                /* Standard property for compatibility */
     -webkit-box-orient: vertical;
@@ -105,6 +104,11 @@ h1 {
 .slider {
     width: 100%;
 }
+.flag {
+    margin-inline: 1px;
+    border-radius: 25%;
+    width: calc(24 * var(--resizable-width) / 448);;
+}
 
 /* Splash screen CSS */
 
@@ -115,7 +119,6 @@ h1 {
     width: 100%;
     height: 100%;
     background-color: #1a1d21;
-    color: #82aaff;
     z-index: 5;
     display: flex;
     justify-content: center;
@@ -127,11 +130,17 @@ h1 {
     opacity: 0;
     pointer-events: none;
 }
-#splash-screen h1 {
+#splash-title {
     position: absolute;
     font-size: 2.5em;
     text-align: center;
     z-index: -1;
+}
+#splash-title.fade-out {
+    display: inline-block;
+    transform: translateY(-200%);
+    font-size: 2em;
+    transition: transform 1s ease, font-size 1s ease;
 }
 
 .hand {
