@@ -11,8 +11,8 @@ async function loadContent() {
     window.imageContainer = document.getElementById('image-container');
     await sortBy();
 
-    // Fade out the splash screen after 2 seconds (after loading the content)
-    setTimeout(hideSplash, 2000);
+    // Fade out the splash screen after loading the content
+    hideSplash();
 
     // Load countries
     res = await fetch('./countryCodes.json');
@@ -26,7 +26,7 @@ async function loadContent() {
         loadNextImages();
     }
     }, {
-    rootMargin: '500px', // triggers 500px *before* entering the viewport
+    rootMargin: '1000px', // triggers 500px *before* entering the viewport
     threshold: 0.01
     });
 
@@ -122,7 +122,6 @@ async function sortBy() {
 function hideSplash() {
     document.getElementById('splash-screen').classList.add('fade-out');
     setTimeout(() => {
-        document.getElementById('splash-screen').style.display = 'none';
-        document.body.removeChild(document.getElementById('splash-screen'));
+        document.getElementById('splash-screen').remove();
     }, 1000);
 }
