@@ -21,6 +21,7 @@ const opt = new Headers({
 
 async function getWorldCatalogue(countryCodes = require('./countryCodes.json')) {
     let films = {};
+    countryCodes.sort((a, b) => (b.priority || 0) - (a.priority || 0));
     for (const country of countryCodes) {
         await getLocalCatalogue(country, films);
     }
