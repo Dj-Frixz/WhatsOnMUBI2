@@ -109,7 +109,11 @@ function addOverlay(imgBlock, title, directors, availability) {
     const availabilityElement = document.createElement('p');
     availabilityElement.className = 'availability';
     availabilityElement.innerHTML = availability.map(code =>
+<<<<<<< HEAD
         `<img src="https://flagcdn.com/24x18/${code.toLowerCase()}.png" alt="${code}"
+=======
+        `<img src="https://flagcdn.com/${code.toLowerCase()}.svv" height="18" alt="${code}"
+>>>>>>> parent of 2648312 (png > svg -- fixed typo)
         title="${countries.find(country => country.code == code)?.name}" class="flag" />`
     ).join('');
     overlay.appendChild(titleElement);
