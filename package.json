@@ -1,10 +1,10 @@
 {
   "name": "whatsonmubi2",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "World catalogue of available movies on MUBI, updated daily! Inspired from the original whatsonmubi.",
   "main": "extract.js",
   "scripts": {
-    "test": "node extract.js"
+    "update": "node extract.js"
   },
   "repository": {
     "type": "git",
