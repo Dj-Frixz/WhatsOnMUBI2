@@ -27,30 +27,40 @@ async function getWorldCatalogue(countryCodes = require('./countryCodes.json')) 
     return films;
 }
 
-async function getLocalCatalogue(country, films) {
-    let url = 'https://api.mubi.com/v4/browse/films?sort=popularity_quality_score&playable=true';
+async function getLocalCatalogue(country, films, retry = 0) {
+    let url = 'https://api.mubi.com/v4/browse/films?playable=true&per_page=100';
     const optLocal = new Headers(opt);
     optLocal.set("client-country", country.code);
     let res = await fetch(url, {headers: optLocal});
     if (res.status !== 200) {
-        console.error(`Error fetching ${country.name} catalogue: responded with a ${res.status} code`);
-        return null;
+        console.warn(`Error fetching ${country.name} catalogue at page 1: responded with a ${res.status} code`,
+                    `\nRetrying in ${10+Math.pow(2, retry)} seconds...`);
+        await sleep(10000 + 1000 * Math.pow(2, retry));
+        if (retry+1 > 5) {
+            console.error(`Failed to fetch ${country.name} catalogue after 5 retries.`);
+            return;
+        }
+        return getLocalCatalogue(country, films, retry + 1);
     }
     let data = await res.json();
+    console.log('Fetching data from ' + country.name + '...');
     updateFilms(data, films, country);
-    console.log(data.meta.total_pages/10,' seconds left...')
-    await sleep(100); // Sleep for 1 second to avoid rate limiting
 
     while (data.meta.next_page) {
-        url = `https://api.mubi.com/v4/browse/films?sort=popularity_quality_score&page=${data.meta.next_page}&playable=true`;
-        res = await fetch(url, {headers: optLocal});
+        res = await fetch(url + '&page=' + data.meta.next_page, {headers: optLocal});
         if (res.status !== 200) {
-            console.error(`Error fetching ${country.name} catalogue at page ${data.meta.next_page}: responded with a ${res.status} code`);
-            return null;
+            console.warn(`Error fetching ${country.name} catalogue at page ${data.meta.next_page}: responded with a ${res.status} code`,
+                        `\nRetrying in ${10+Math.pow(2, retry)} seconds...`);
+            await sleep(10000 + 1000 * Math.pow(2, retry));
+            retry++;
+            if (retry > 5) {
+                console.error(`Failed to fetch ${country.name} catalogue after 5 retries.`);
+                break;
+            }
+        } else {
+            data = await res.json();
+            updateFilms(data, films, country);
         }
-        data = await res.json();
-        updateFilms(data, films, country);
-        await sleep(100); // Sleep for 1 second to avoid rate limiting
     }
 }
 
@@ -63,11 +73,13 @@ function updateFilms(data, films, country) {
             films[film.id].availability = {
                 [country.code]: film.consumable
             };
+            delete films[film.id].consumable;
         }
     }
 }
 
 (async () => {
+    const start = Date.now();
     let catalogue = await getWorldCatalogue(); // test: [{code: 'IT', name: 'Italy'},{code: 'MX', name: 'Mexico'}]
     const json = JSON.stringify(catalogue); //, null, 2);
     const fs = require('fs');
@@ -78,4 +90,7 @@ function updateFilms(data, films, country) {
             console.log('JSON has been written successfully.');
         }
     });
+    console.log('Time taken:', (Date.now() - start) / 60000, 'minutes');
 })();
+
+// Array.from(document.querySelectorAll('[data-location-type="country"]'), cc=>[cc.getElementsByTagName("img")[0].getAttribute("src").match(/\w\w(-svg)?\.svg$/)[0].slice(0,2).toUpperCase(), cc.getAttribute("aria-label"), cc.getElementsByTagName("img")[0].getAttribute("src")]);
