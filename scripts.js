@@ -124,9 +124,9 @@ function addOverlay(imgBlock, title, directors, availability) {
           <img
             src="https://flagcdn.com/h20/${code.toLowerCase()}.png"
             height="20"
-            alt="${code}">
+            alt="${code}"
             title="${countries.find(country => country.code == code)?.name}"
-            class="flag"
+            class="flag">
         </picture>`
     ).join('');
     overlay.appendChild(titleElement);
