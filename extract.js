@@ -19,6 +19,8 @@ const opt = new Headers({
     "Referrer-Policy": "strict-origin-when-cross-origin"
 });
 
+const url = 'https://api.mubi.com/v4/browse/films?playable=true&sort=title&per_page=100';
+
 async function getWorldCatalogue(countryCodes = require('./countryCodes.json')) {
     let films = {};
     countryCodes.sort((a, b) => (b.priority || 0) - (a.priority || 0));
@@ -29,7 +31,6 @@ async function getWorldCatalogue(countryCodes = require('./countryCodes.json')) 
 }
 
 async function getLocalCatalogue(country, films, retry = 0) {
-    let url = 'https://api.mubi.com/v4/browse/films?playable=true&per_page=100';
     const optLocal = new Headers(opt);
     optLocal.set("client-country", country.code);
     let res = await fetch(url, {headers: optLocal});
