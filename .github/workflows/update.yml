@@ -8,6 +8,7 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: ['main']
+    paths: ['extract.js']
   # Run every day at 5.00 in the morning
   schedule:
     - cron: '00 5 * * *'
