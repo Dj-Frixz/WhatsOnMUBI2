@@ -110,8 +110,24 @@ function addOverlay(imgBlock, title, directors, availability) {
     const availabilityElement = document.createElement('p');
     availabilityElement.className = 'availability';
     availabilityElement.innerHTML = availability.map(code =>
-        `<img src="https://flagcdn.com/${code.toLowerCase()}.svg" height="18" alt="${code}"
-        title="${countries.find(country => country.code == code)?.name}" class="flag" />`
+        `<picture>
+          <source
+            type="image/webp"
+            srcset="https://flagcdn.com/h20/${code.toLowerCase()}.webp,
+              https://flagcdn.com/h40/${code.toLowerCase()}.webp 2x,
+              https://flagcdn.com/h60/${code.toLowerCase()}.webp 3x">
+          <source
+            type="image/png"
+            srcset="https://flagcdn.com/h20/${code.toLowerCase()}.png,
+              https://flagcdn.com/h40/${code.toLowerCase()}.png 2x,
+              https://flagcdn.com/h60/${code.toLowerCase()}.png 3x">
+          <img
+            src="https://flagcdn.com/h20/${code.toLowerCase()}.png"
+            height="20"
+            alt="${code}">
+            title="${countries.find(country => country.code == code)?.name}"
+            class="flag"
+        </picture>`
     ).join('');
     overlay.appendChild(titleElement);
     overlay.appendChild(directorsElement);
