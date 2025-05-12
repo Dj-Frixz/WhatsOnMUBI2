@@ -44,11 +44,10 @@ async function loadCountries() {
     const countrySelect = document.getElementById('countrySelect');
     countrySelect.disabled = false;
     countrySelect.title = 'Select a country';
-    let i = 0;
     countries.forEach(country => {
         const option = document.createElement('option');
-        option.value = i; i++;
-        option.textContent = country[1];
+        option.value = country.code;
+        option.textContent = country.name;
         countrySelect.appendChild(option);
     });
 }
