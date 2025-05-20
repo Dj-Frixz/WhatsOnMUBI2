@@ -68,14 +68,16 @@ async function getLocalCatalogue(country, films, retry = 0) {
 
 function updateFilms(data, films, country) {
     for (const film of data.films) {
-        if (films[film.id]) {
-            films[film.id].availability[country.code] = film.consumable;
-        } else {
-            films[film.id] = film;
-            films[film.id].availability = {
-                [country.code]: film.consumable
-            };
-            delete films[film.id].consumable;
+        if (film.consumable !== null) { // for some reason some movies show 'null' availability instead of not showing availability, probably MUBI's fault
+            if (films[film.id]) {
+                films[film.id].availability[country.code] = film.consumable;
+            } else {
+                films[film.id] = film;
+                films[film.id].availability = {
+                    [country.code]: film.consumable
+                };
+                delete films[film.id].consumable;
+            }
         }
     }
 }
