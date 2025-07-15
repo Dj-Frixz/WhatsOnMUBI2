@@ -1,13 +1,12 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
 ////// INITIAL CONTENT LOADING
 
-async function loadContent() {
-    
-    // Load film data
-    let res = await fetch('./mubi.json');
-    window.films = await res.json();
-    films = Object.values(films);
-    console.log(films.length + ' films found.');
-    window.filteredFilms = Array.from(films);
+export async function loadContent() {
+    // Initialize Supabase client
+    const supabaseUrl = 'https://sjupwzjsaxfeszpznftt.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdXB3empzYXhmZXN6cHpuZnR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyNDE3ODgsImV4cCI6MjA2MjgxNzc4OH0.vnRR2mhcvegfpSlEdT85I4iR7mARt5P7KeI9Nrp3rRg';
+    window.sql = createClient(supabaseUrl, supabaseKey);
 
     // Set the size of the images
     const imgSize = new URLSearchParams(window.location.search).get('imgsize') || 448;
@@ -15,29 +14,28 @@ async function loadContent() {
     document.documentElement.style.setProperty('--resizable-width', `${imgSize}px`);
 
     // Load countries
-    res = await fetch('./countryCodes.json');
+    const res = await fetch('./countryCodes.json');
     window.countries = await res.json();
     loadCountries();
 
     // Load the images
     window.imageContainer = document.getElementById('image-container');
-    await sortBy();
+    await refreshImages();
 
     // Fade out the splash screen after loading the content
     setTimeout(hideSplash(), 1000);
 
     // Add event listener for loading more images at the end of the page
-    const end = document.getElementById('end-of-file');
     const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-        loadNextImages();
-    }
+        if (entries[0].isIntersecting) {
+            loadNextImages();
+        }
     }, {
-    rootMargin: '100%', // triggers *before* entering the viewport
-    threshold: 0.01
+        rootMargin: '100%', // triggers *before* entering the viewport
+        threshold: 0.01
     });
     
-    observer.observe(end);
+    observer.observe(document.querySelector('#end-of-file'));
 }
 
 async function loadCountries() {
@@ -64,29 +62,63 @@ function hideSplash() {
 
 //// Image loading
 
-async function refreshImages() {
+export async function refreshImages() {
     imageContainer.innerHTML = ''; // Clear the container
-    window.i = 0;
+    window.page = 0;
     loadNextImages();
 }
 
 async function loadNextImages() {
-    const nextFilms = filteredFilms.slice(i, i + 24);
-    nextFilms.forEach(film => {
+    const countryCode = document.getElementById('countrySelect').value;
+    console.log(`Loading images for country: ${countryCode}`);
+    const searchDirector = document.getElementById('searchDirector').value
+        .normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
+        .trim().split(/[\s,]+/).join('%');
+    const searchFilm = document.getElementById('search').value; // .normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    const sortBy = document.getElementById('sortSelect').value;
+    
+    // Query the database for films based on the search criteria
+    // 
+    if (!countryCode) {
+        const { data : films, error } = await sql
+            .from('film')
+            .select('title, cover_url')
+            .ilike('title', `%${searchFilm}%`)
+            .like('normalized_directors', `%${searchDirector}%`)
+            .order(sortBy, { ascending: false })
+            .range(page * 24, (page + 1) * 24 - 1);
+        films.forEach(film => {
+            const imgBlock = document.createElement('div');
+            imgBlock.className = 'img-block';
+            addImage(imgBlock, film.cover_url, film.title);
+        });
+        page++;
+        return;
+    }
+    const { data: films, error } = await sql
+        .from('availability')
+        .select('film_id, film( title, normalized_directors, cover_url, popularity , average_rating, critic_rating, year )')
+        .eq('country_code', countryCode)
+        .ilike('film.title', `%${searchFilm}%`)
+        .like('film.normalized_directors', `%${searchDirector}%`)
+        .order(`film(${sortBy})`, { ascending: false })
+        .range(page * 24, (page + 1) * 24 - 1);
+
+    films.forEach(entry => {
         const imgBlock = document.createElement('div');
         imgBlock.className = 'img-block';
-        addImage(imgBlock, film.stills.medium, film.title);
-        addOverlay(
-            imgBlock,
-            film.title, film.directors.map(dir => dir.name).join(', '),
-            Object.keys(film.availability)
-            // Emojis
-            /*Object.keys(film.availability).map(code => 
-                code.replace(/./g, char => 
-                    String.fromCodePoint(char.charCodeAt(0) + 127397))).join(' ') // `https://flagcdn.com/24x18/${countrycode}.png`
-        */);
-        i++;
+        addImage(imgBlock, entry.film.cover_url, entry.film.title);
+        // addOverlay(
+        //     imgBlock,
+        //     film.title, film.directors.map(dir => dir.name).join(', '),
+        //     Object.keys(film.availability)
+        //     // Emojis
+        //     /*Object.keys(film.availability).map(code => 
+        //         code.replace(/./g, char => 
+        //             String.fromCodePoint(char.charCodeAt(0) + 127397))).join(' ') // `https://flagcdn.com/24x18/${countrycode}.png`
+        // */);
     });
+    page++;
 }
 
 function addImage(imgBlock, src, alt) {
@@ -134,36 +166,10 @@ function addOverlay(imgBlock, title, directors, availability) {
     imgBlock.appendChild(overlay);
 }
 
-//// Filters and sortings
+//// user inputs
 
-async function filter() {
-    const countryCode = document.getElementById('countrySelect').value;
-    const searchDirector = document.getElementById('searchDirector').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-    const searchFilm = document.getElementById('search').value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-    filteredFilms = Array.from(films);
-    if (countryCode !== '') {
-        filteredFilms = filteredFilms.filter(film => film.availability[countryCode] ? true : false);
-    }
-    if (searchDirector !== '') {
-        filteredFilms = filteredFilms.filter(film => film.directors.some(dir => 
-            dir.name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchDirector)));
-    }
-    if (searchFilm !== '') {
-        filteredFilms = filteredFilms.filter(film => 
-            film.title.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(searchFilm));
-    }
-    refreshImages();
-}
-
-async function resetFields() {
+export async function resetFields() {
     document.getElementById('search').value = '';
     document.getElementById('searchDirector').value = '';
-    filteredFilms = Array.from(films);
     refreshImages();
-}
-
-async function sortBy() {
-    const sortBy = document.getElementById('sortSelect').value;
-    films = films.sort((a, b) => b[sortBy] - a[sortBy]);
-    filter();
 }

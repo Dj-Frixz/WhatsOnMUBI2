@@ -1,10 +1,11 @@
 {
   "name": "whatsonmubi2",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "World catalogue of available movies on MUBI, updated daily! Inspired from the original whatsonmubi.",
-  "main": "extract.js",
+  "main": "update.js",
+  "type": "module",
   "scripts": {
-    "update": "node extract.js"
+    "update": "node update.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,9 @@
     "streaming"
   ],
   "author": "Dj-Frixz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "postgres": "^3.4.7"
+  }
 }
