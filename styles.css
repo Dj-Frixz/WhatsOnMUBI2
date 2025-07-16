@@ -41,8 +41,12 @@ h1 {
     max-width: 98%;
     border-radius: 20px;
     border: 0px solid var(--bg2-color);
-    transition: filter 0.3s ease;
+    transition: opacity 0.5s, filter 0.3s ease;
     overflow: hidden;
+    opacity: 0;
+}
+.visible {
+    opacity: 1;
 }
 .img-block:hover .cover {
     filter: brightness(30%);
@@ -92,8 +96,11 @@ h1 {
     max-width: 170px;
     margin-bottom: var(--input-margin-bottom);
     margin-inline: 0.75em;
+    border-width: 2px;
+    border-color: var(--base-font-color);
     border-radius: 5px;
-    background-color: azure;/*#3c3f46;#2e3440;*/
+    color: var(--base-font-color);
+    background-color: var(--bg2-color);/*#3c3f46;#2e3440;*/
 }
 .range-box{
     margin-top: 1em;
@@ -110,6 +117,27 @@ h1 {
     margin-inline: 1px;
     border-radius: 25%;
     width: calc(24 * var(--resizable-width) / 448);;
+}
+.arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: -0.1em;
+    background-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.arrow.flipped {
+    transform: rotate(180deg);
+}
+.sort-container {
+    display: inline-flex;
+    border: #7E1891 solid 2px;
+}
+.sort-container select {
+    border: 0;
+    background-color: transparent;
 }
 
 /* Splash screen CSS */

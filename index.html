@@ -17,15 +17,28 @@
         <input type="text" id="search" placeholder="Search for a film..." oninput="refreshImages()" class="search-bar">
         <input type="text" id="searchDirector" placeholder="Search for a director..." oninput="refreshImages()" class="search-bar">
         <input type="button" id="reset" value="Reset" onclick="resetFields()" class="search-bar">
+        </form>
         <select title="Loading countries..." name="country" id="countrySelect" onchange="refreshImages()" class="search-bar" disabled>
             <option value=>All countries</option>
         </select>
+        <!-- <input type="checkbox" id="4K" onchange="refreshImages()" checked>
+        <label for="4K">4K</label>
+        <input type="checkbox" id="HD" onchange="refreshImages()" checked>
+        <label for="HD">HD</label>
+        <input type="checkbox" id="SD" onchange="refreshImages()" checked>
+        <label for="SD">SD</label>
+        <input type="checkbox" id="NA" onchange="refreshImages()" checked>
+        <label for="NA">NA</label> -->
+        <span class="sort-container">
         <select title="Sort by" name="sort" id="sortSelect" onchange="refreshImages()" class="search-bar">
             <option value="popularity">Popularity</option>
             <option value="average_rating">User rating</option>
             <option value="critic_rating">Critic rating</option>
+            <option value="duration">Duration</option>
             <option value="year">Year</option>
         </select>
+        <span id="sortArrow" class="arrow" onclick="this.classList.toggle('flipped'); refreshImages();">&#9660;</span>
+        </span>
     </fieldset>
     <div class="range-box">
         <p>Size of images</p>
